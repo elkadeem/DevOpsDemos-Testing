@@ -1,4 +1,5 @@
 ﻿using CustomersWebapp.Models;
+using Microsoft.AspNetCore.Authorization;
 using CustomersWebapp.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CustomersWebapp.Controllers
 {
+    [Authorize]
     public class CustomersController : Controller
     {
 
