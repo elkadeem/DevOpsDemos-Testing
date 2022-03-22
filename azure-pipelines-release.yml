@@ -40,6 +40,7 @@ stages:
               WebsiteName: 'CustomerWebApp-dev'
               WebsitePhysicalPath: '%SystemDrive%\inetpub\CustomerWebApp-dev'
               WebsitePhysicalPathAuth: 'WebsiteUserPassThrough'
+              AddBinding: true
               Protocol: http
               Port: 8081
               CreateOrUpdateAppPoolForWebsite: true
