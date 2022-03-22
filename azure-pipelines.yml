@@ -1,10 +1,15 @@
-# ASP.NET Core
+M# ASP.NET Core
 # Build and test ASP.NET Core projects targeting .NET Core.
 # Add steps that run tests, create a NuGet package, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
+
 trigger:
-- master
+  branches:
+    include:
+     - '*'
+    exclude:
+     - master
 
 pool:
   name: DemoProject
@@ -15,11 +20,12 @@ variables:
 steps:
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
+  
 - task: DotNetCoreCLI@2
   displayName: 'Test Project'
   inputs:
     command: 'test'
-    projects: '**/*testing.csproj'
+    projects: '**/*CustomersWebapp.Testing'
     arguments: '--configuration $(buildConfiguration) --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura'
 
 - task: PublishCodeCoverageResults@1
