@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CustomersWebapp.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class CustomersController : Controller
     {
 

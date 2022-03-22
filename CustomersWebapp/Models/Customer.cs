@@ -2,6 +2,16 @@
 {
     public class Customer
     {
+        public Customer()
+        {
+
+        }
+        public Customer(string name, string email, string phone)
+        {
+            Name = name;
+            Email = email;
+            Phone = phone;
+        }
         public int ID { get; set; }
 
         public string Name { get; set; }
