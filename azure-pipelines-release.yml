@@ -7,11 +7,13 @@ trigger: none
 
 stages:
 - stage: deploy
-  jobs:
+  jobs:  
   - deployment: DeployWeb
-    displayName: deploy Web App
+    displayName: deploy Web App    
     pool:
      name: DemoProject
+    variables:
+     - group: Dev-Variables
     # creates an environment if it doesn't exist
     environment: 
       name: 'dev'
@@ -30,6 +32,12 @@ stages:
               buildVersionToDownload: 'latest'
               downloadType: 'specific'
               downloadPath: '$(System.ArtifactsDirectory)'
+          
+          - task: FileTransform@1
+            inputs:
+              folderPath: '$(System.ArtifactsDirectory)\**\*.zip'
+              fileType: 'json'
+              targetFiles: '**/appsettings.json'
 
           - task: IISWebAppManagementOnMachineGroup@0
             displayName: 'Enable IIS fif not enabled'
