@@ -13,7 +13,10 @@ stages:
     pool:
      name: DemoProject
     # creates an environment if it doesn't exist
-    environment: 'dev'
+    environment: 
+      name: 'dev'
+      resourceType: VirtualMachine
+      tags: iis  
     strategy:
       runOnce:
         deploy:
@@ -37,8 +40,8 @@ stages:
               WebsiteName: 'CustomerWebApp-dev'
               WebsitePhysicalPath: '%SystemDrive%\inetpub\CustomerWebApp-dev'
               WebsitePhysicalPathAuth: 'WebsiteUserPassThrough'
-              AddBinding: true
-              Bindings: 'http *:8081:'
+              Protocol: http
+              Port: 8081
               CreateOrUpdateAppPoolForWebsite: true
               AppPoolNameForWebsite: 'CustomerWebApp-dev'
               DotNetVersionForWebsite: 'No Managed Code'
