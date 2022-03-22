@@ -1,0 +1,62 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger: none
+
+stages:
+- stage: deploy
+  jobs:
+  - deployment: DeployWeb
+    displayName: deploy Web App
+    pool:
+     name: DemoProject
+    # creates an environment if it doesn't exist
+    environment: 
+      name: 'dev'
+      resourceType: VirtualMachine
+      tags: iis  
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadBuildArtifacts@0
+            displayName: 'Downlaod artifacts form build pipeline'
+            inputs:
+              buildType: 'specific'
+              project: 'bc5714f7-fe2b-47af-93df-118359d4a063'
+              pipeline: '7'
+              buildVersionToDownload: 'latest'
+              downloadType: 'specific'
+              downloadPath: '$(System.ArtifactsDirectory)'
+
+          - task: IISWebAppManagementOnMachineGroup@0
+            displayName: 'Enable IIS fif not enabled'
+            inputs:
+              EnableIIS: true
+              IISDeploymentType: 'IISWebsite'
+              ActionIISWebsite: 'CreateOrUpdateWebsite'
+              WebsiteName: 'CustomerWebApp-dev'
+              WebsitePhysicalPath: '%SystemDrive%\inetpub\CustomerWebApp-dev'
+              WebsitePhysicalPathAuth: 'WebsiteUserPassThrough'
+              AddBinding: true
+              Protocol: http
+              Port: 8081
+              CreateOrUpdateAppPoolForWebsite: true
+              AppPoolNameForWebsite: 'CustomerWebApp-dev'
+              DotNetVersionForWebsite: 'No Managed Code'
+              PipeLineModeForWebsite: 'Integrated'
+              AppPoolIdentityForWebsite: 'ApplicationPoolIdentity'
+          
+          
+          - task: IISWebAppDeploymentOnMachineGroup@0
+            displayName: 'Deploy App to IIS'
+            inputs:
+              WebSiteName: 'CustomerWebApp-dev'
+              Package: '$(System.ArtifactsDirectory)\**\*.zip'
+              TakeAppOfflineFlag: true
+              
+          
+          
+          
