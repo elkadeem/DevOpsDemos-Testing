@@ -1,5 +1,9 @@
 ﻿using CustomersWebApp.IntegrationTesting.Fixtures;
+using CustomersWebApp.IntegrationTesting.Helpers;
 using Microsoft.AspNetCore.Mvc.Testing;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -8,41 +12,51 @@ namespace CustomersWebapp.Testing
     public class CustomerControllerIntegrationTestWithInMemeoryDb : IClassFixture<CustomWebApplicationFactory<Program>>
     {
         private readonly WebApplicationFactory<Program> factory;
-
         public CustomerControllerIntegrationTestWithInMemeoryDb(CustomWebApplicationFactory<Program> factory)
-        {            
+        {
             this.factory = factory;
         }
 
         [Fact]
         public async Task Get_Customer_Will_Return_Ok()
-        {            
+        {
             //Arrange
-            var client = factory.CreateClient(new WebApplicationFactoryClientOptions { 
-              AllowAutoRedirect = false
+            var client = factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = true,
+                HandleCookies = true,
             });
 
+            var response = await client.GetAsync("/Identity/Account/Login");
+            var htmlDocument = await HtmlHelpers.GetDocumentAsync(response);
+            var hiddenElement =  htmlDocument.QuerySelector("input[name='__RequestVerificationToken']");
+
+
+            var content = new FormUrlEncodedContent(new List<KeyValuePair<string, string>>()
+            {
+              new KeyValuePair<string, string>("Input.Email", "test@email.com"),
+              new KeyValuePair<string, string>("Input.Password", "P@ssw0rd@324"),
+              new KeyValuePair<string, string>("__RequestVerificationToken"
+              , hiddenElement.GetAttribute("value"))
+            });
+            
+            response = await client.PostAsync("/Identity/Account/Login", content);
+            response.EnsureSuccessStatusCode();
+
             //Act
-            var response = await client.GetAsync("/Customers");
+            response = await client.GetAsync("/Customers");
 
             //Assert
             response.EnsureSuccessStatusCode();
         }
+    }
 
-        //[Fact]
-        //public async Task Get_Customer_Will_Return_Ok()
-        //{
-        //    //var application = new WebApplicationFactory<Program>()
-        //    //    .WithWebHostBuilder(builder => { 
-        //    //    });
+    public class UserLogin
+    {
+        public string Email { get; set; }
 
-        //    var client = factory.CreateClient();
+        public string Password { get; set; }
 
-        //    //Act
-            
-
-        //    //Assert
-        //    response.EnsureSuccessStatusCode();
-        //}
+        public bool RememberMe { get; set; }
     }
 }

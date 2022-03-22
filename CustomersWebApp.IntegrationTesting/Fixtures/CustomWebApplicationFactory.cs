@@ -1,6 +1,7 @@
 ﻿using CustomersWebapp.Data;
 using CustomersWebapp.Models;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +14,6 @@ namespace CustomersWebApp.IntegrationTesting.Fixtures
     public class CustomWebApplicationFactory<TStartup>
         : WebApplicationFactory<TStartup> where TStartup : class
     {
-
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.ConfigureServices(services =>
@@ -54,8 +54,14 @@ namespace CustomersWebApp.IntegrationTesting.Fixtures
                     var customersDbContext = scopedServices.GetRequiredService<CustomersDbContext>();
                     customersDbContext.Database.EnsureCreated();
 
+                    var userManager = scopedServices.GetRequiredService<UserManager<IdentityUser>>();
+
                     try
                     {
+                        userManager.CreateAsync(new IdentityUser("test@email.com") { 
+                         Email = "test@email.com",
+                         EmailConfirmed = true,                         
+                        }, "P@ssw0rd@324").Wait();
                         DatabaseSeeding.SeedCustomers(customersDbContext);                        
                     }
                     catch (Exception ex)
