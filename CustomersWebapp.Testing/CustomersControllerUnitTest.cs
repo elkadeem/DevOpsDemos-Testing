@@ -1,4 +1,5 @@
 using CustomersWebapp.Controllers;
+using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
 namespace CustomersWebapp.Testing
@@ -12,7 +13,7 @@ namespace CustomersWebapp.Testing
             CustomersController customersController = new CustomersController();
 
             //Act
-            var result = customersController.Index(null, null, null);
+            var result = customersController.Index(new CustomersViewModel());
 
             //Assert
             Assert.NotNull(result);
@@ -25,10 +26,11 @@ namespace CustomersWebapp.Testing
             CustomersController customersController = new CustomersController();
             string search = "name1";
             //Act
-            var result = customersController.Index(search, null, null);
+            var result = customersController.Index(new CustomersViewModel() { Name = search });
 
             //Assert
             Assert.NotNull(result);
+            Assert.IsType<ViewResult>(result);
         }
 
         [Fact]
@@ -38,10 +40,32 @@ namespace CustomersWebapp.Testing
             CustomersController customersController = new CustomersController();
             string search = "email 1";
             //Act
-            var result = customersController.Index(null, search, null);
+            var result = customersController.Index(new CustomersViewModel() { Email = search });
 
             //Assert
             Assert.NotNull(result);
         }
+
+        #region Create
+        [Fact]
+        public void Create_With_Invalid_Data_Will_Return_To_View_With_Model()
+        {
+            //Arrange
+            CustomersController customersController = new CustomersController();
+            var customerModel = new CreateCustomerModel
+            {
+                Name = "name",
+                Email = "Invalid",
+                Phone = "21"
+            };
+
+            //Act
+            var result = customersController.Create(customerModel);
+
+            //Assert
+            Assert.IsType<ViewResult>(result);
+            Assert.Equal(customerModel, ((ViewResult)result).Model);
+        }
+        #endregion
     }
 }
