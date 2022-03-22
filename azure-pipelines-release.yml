@@ -47,6 +47,7 @@ stages:
           
           
           - task: IISWebAppDeploymentOnMachineGroup@0
+            displayName: 'Deploy App to IIS'
             inputs:
               WebSiteName: 'CustomerWebApp-dev'
               Package: '$(System.ArtifactsDirectory)\**\*.zip'
