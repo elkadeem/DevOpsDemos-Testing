@@ -6,14 +6,43 @@
 trigger:
 - master
 
-pool:
-  name: default
-
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+stages:
+- stage: deploy
+  jobs:
+  - deployment: DeployWeb
+    displayName: deploy Web App
+    pool:
+     name: DemoProject
+    # creates an environment if it doesn't exist
+    environment: 'dev'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: IISWebAppManagementOnMachineGroup@0
+            displayName: 'Enable IIS fif not enabled'
+            inputs:
+              EnableIIS: true
+              IISDeploymentType: 'IISWebsite'
+              ActionIISWebsite: 'CreateOrUpdateWebsite'
+              WebsiteName: 'CustomerWebApp-dev'
+              WebsitePhysicalPath: '%SystemDrive%\inetpub\CustomerWebApp-dev'
+              WebsitePhysicalPathAuth: 'WebsiteUserPassThrough'
+              AddBinding: true
+              Bindings: 'http *:8081:'
+              CreateOrUpdateAppPoolForWebsite: true
+              AppPoolNameForWebsite: 'CustomerWebApp-dev'
+              DotNetVersionForWebsite: 'No Managed Code'
+              PipeLineModeForWebsite: 'Integrated'
+              AppPoolIdentityForWebsite: 'ApplicationPoolIdentity'
+          
+          
+          - task: IISWebAppDeploymentOnMachineGroup@0
+            inputs:
+              WebSiteName: 'CustomerWebApp-dev'
+              Package: '$(System.DefaultWorkingDirectory)\**\*.zip'
+              TakeAppOfflineFlag: true
+              
+          
+          
+          
