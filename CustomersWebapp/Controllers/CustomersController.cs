@@ -1,21 +1,23 @@
 ﻿using CustomersWebapp.Models;
+using CustomersWebapp.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace CustomersWebapp.Controllers
 {
     public class CustomersController : Controller
     {
-        //Problems ???
-        public IActionResult Index(CustomersViewModel model)
-        {
-            var list = new List<Customer> {
-                new Customer { ID = 1, Name = "Name 1", Email = "Emai 1", Phone = "Phone" },
-                new Customer { ID = 1, Name = "Name 2", Email = "Emai 2", Phone = "Phone" },
-                new Customer { ID = 1, Name = "Name 3", Email = "Emai 3", Phone = "Phone" },
-                new Customer { ID = 1, Name = "Name 4", Email = "Emai 4", Phone = "Phone" },
-            };
 
+        private readonly ICustomersRepository customersRepository;
+        public CustomersController(ICustomersRepository customersRepository)
+        {
+            this.customersRepository = customersRepository;
+        }
+        //Problems ???
+        public async Task<IActionResult> Index(CustomersViewModel model)
+        {
+            var list = await customersRepository.Get();
             return View(list);
         }
 
@@ -28,12 +30,21 @@ namespace CustomersWebapp.Controllers
         //How many test cases needed?????
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(CreateCustomerModel model)
+        public async Task<IActionResult> Create(CreateCustomerModel model)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                //ToDo: Save it to database
-                return RedirectToAction(nameof(Index));
+                var result = await customersRepository.Add(new Customer()
+                {
+                    Email = model.Email,
+                    Name = model.Name,
+                    Phone = model.Phone,
+                });
+
+                if (result)
+                    return RedirectToAction(nameof(Index));
+                else
+                    ModelState.AddModelError("", "An error while saving");
             }
 
             return View(model);
@@ -63,6 +74,6 @@ namespace CustomersWebapp.Controllers
         public string Department { get; set; }
 
         public int? ManagerId { get; set; }
-        
+
     }
 }
