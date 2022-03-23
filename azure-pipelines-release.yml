@@ -65,6 +65,12 @@ stages:
               Package: '$(System.ArtifactsDirectory)\**\*.zip'
               TakeAppOfflineFlag: true
               
-          
+          - task: oneluckidevWebSmokeTest@1
+            inputs:
+              url: 'http://20.224.244.228:8081/'
+              expectedReturnCode: '200'
+              retryAttemptCount: '3'
+              strictSSL: false
+              retryDelay: '1000'
           
           

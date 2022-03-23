@@ -26,5 +26,11 @@ namespace CustomersWebapp.Repositories
             return customersDbContext.Customers
                 .ToListAsync();
         }
+
+        public Task<Customer> Get(int id)
+        {
+            return customersDbContext.Customers
+                .FirstOrDefaultAsync(c => c.ID == id);
+        }
     }
 }
