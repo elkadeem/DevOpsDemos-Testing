@@ -134,18 +134,35 @@ namespace CustomersWebapp.Testing
 
         }
         #endregion
-    }
 
-    public class FakeCustomerRepository : ICustomersRepository
-    {
-        public Task<bool> Add(Customer customer)
+
+        #region Customer Details
+        [Fact]
+        public async Task Get_Customer_By_Id_Will_Return_View_If_Customer_Exist()
         {
-            return Task.FromResult(true);
+            //Arrange
+            var customer = new Customer("A", "B", "D");
+            repositoryStub.Setup(c => c.Get(It.IsAny<int>()))
+                .ReturnsAsync(customer);
+            //Act
+            var result = await customersController.Details(1);
+
+            //Assert
+            Assert.IsType<ViewResult>(result);
+            Assert.IsAssignableFrom<Customer>(((ViewResult)result).Model);
         }
 
-        public Task<List<Customer>> Get()
+        [Fact]
+        public async Task Get_Customer_By_Id_Will_Return_NotFound_If_Customer_Not_Exist_Exist()
         {
-            return Task.FromResult(new List<Customer>());
+            //Arrange            
+            
+            //Act
+            var result = await customersController.Details(1);
+
+            //Assert
+            Assert.IsType<NotFoundResult>(result);           
         }
+        #endregion 
     }
 }
