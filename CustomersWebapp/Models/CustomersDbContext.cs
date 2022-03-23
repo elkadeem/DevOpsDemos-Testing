@@ -21,7 +21,11 @@ namespace CustomersWebapp.Models
                 .IsRequired();
 
                 builder.Property(c => c.Email)
-                     .HasMaxLength(100).IsRequired();
+                     .HasMaxLength(100)
+                     .IsRequired();
+
+                builder.HasIndex(c => c.Email)
+                    .IsUnique();
 
                 builder.Property(c => c.Phone)
                      .HasMaxLength(15).IsRequired();

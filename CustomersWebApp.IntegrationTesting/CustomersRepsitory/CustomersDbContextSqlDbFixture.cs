@@ -8,17 +8,17 @@ using System.Threading.Tasks;
 
 namespace CustomersWebApp.IntegrationTesting.CustomersRepsitory
 {
-    // Is In-Memory DB is enough???!!!!!
-    public class CustomersDbContextFixture : IDisposable
+    public class CustomersDbContextSqlDbFixture : IDisposable
     {
         public CustomersDbContext CustomersDbContext { get;}
-        public CustomersDbContextFixture()
+        public CustomersDbContextSqlDbFixture()
         {
             DbContextOptionsBuilder<CustomersDbContext> dbContextOptionsBuilder
                 = new DbContextOptionsBuilder<CustomersDbContext>();
-            dbContextOptionsBuilder.UseInMemoryDatabase("testdb");
-            CustomersDbContext = new CustomersDbContext(dbContextOptionsBuilder.Options);
-            CustomersDbContext.Database.EnsureCreated();
+            dbContextOptionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=aspnet-CustomersWebapp-Testing-Db;Trusted_Connection=True;MultipleActiveResultSets=true");
+            CustomersDbContext = new CustomersDbContext(dbContextOptionsBuilder.Options);            
+            CustomersDbContext.Database.EnsureDeleted();
+            CustomersDbContext.Database.Migrate();
 
             CustomersDbContext.Customers.Add(new Customer("Customer", "email@test.com", "232332")
             {
