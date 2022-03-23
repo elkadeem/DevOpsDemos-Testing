@@ -24,6 +24,15 @@ namespace CustomersWebapp.Controllers
         }
 
 
+        public async Task<IActionResult> Details(int id)
+        {
+            Customer customer = await customersRepository.Get(id);
+            if (customer == null)
+                return NotFound();
+
+            return View(customer);
+        }
+
         public IActionResult Create()
         {
             return View();

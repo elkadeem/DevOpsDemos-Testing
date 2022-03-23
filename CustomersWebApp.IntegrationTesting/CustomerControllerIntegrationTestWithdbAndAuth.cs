@@ -1,5 +1,6 @@
 ﻿using CustomersWebApp.IntegrationTesting.Fixtures;
 using Microsoft.AspNetCore.Mvc.Testing;
+using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -29,6 +30,38 @@ namespace CustomersWebapp.Testing
             response.EnsureSuccessStatusCode();
         }
 
+        [Fact]
+        public async Task Get_Customer_Details_Will_Return_Ok()
+        {
+            //Arrange
+            var client = factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false
+            });
+
+            //Act
+            var response = await client.GetAsync("/Customers/Details/1");
+
+            //Assert
+            response.EnsureSuccessStatusCode();
+        }
+
+        [Fact]
+        public async Task Get_Customer_Details_Will_Return_Not_Found()
+        {
+            //Arrange
+            var client = factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false
+            });
+
+            //Act
+            var response = await client.GetAsync("/Customers/Details/100000");
+
+            //Assert
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
         //[Fact]
         //public async Task Get_Customer_Will_Return_Ok()
         //{
@@ -39,7 +72,7 @@ namespace CustomersWebapp.Testing
         //    var client = factory.CreateClient();
 
         //    //Act
-            
+
 
         //    //Assert
         //    response.EnsureSuccessStatusCode();

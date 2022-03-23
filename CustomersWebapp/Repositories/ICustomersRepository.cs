@@ -7,5 +7,6 @@ namespace CustomersWebapp.Repositories
         Task<List<Customer>> Get();
 
         Task<bool> Add(Customer customer);
+        Task<Customer> Get(int id);
     }
 }
