@@ -12,7 +12,7 @@ trigger:
      - master
 
 pool:
-  name: DemoProject
+  vmImage: 'windows-latest'
 
 variables:
   buildConfiguration: 'Release'
